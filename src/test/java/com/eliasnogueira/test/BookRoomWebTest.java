@@ -30,6 +30,8 @@ import com.eliasnogueira.page.booking.DetailPage;
 import com.eliasnogueira.page.booking.RoomPage;
 import org.testng.annotations.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BookRoomWebTest extends BaseWeb {
@@ -46,6 +48,11 @@ public class BookRoomWebTest extends BaseWeb {
         accountPage.clickNewsletter();
         accountPage.next();
 
+        try {
+            TimeUnit.SECONDS.sleep(20);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         var roomPage = new RoomPage();
         roomPage.selectRoomType(bookingInformation.roomType().get());
         roomPage.next();

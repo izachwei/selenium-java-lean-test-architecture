@@ -26,6 +26,7 @@ package com.eliasnogueira.driver;
 
 import com.eliasnogueira.exceptions.HeadlessNotSupportedException;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -37,6 +38,10 @@ import org.openqa.selenium.remote.AbstractDriverOptions;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import static com.eliasnogueira.config.ConfigurationManager.configuration;
 import static com.eliasnogueira.data.changeless.BrowserData.CHROME_HEADLESS;
 import static com.eliasnogueira.data.changeless.BrowserData.DISABLE_INFOBARS;
@@ -46,6 +51,7 @@ import static com.eliasnogueira.data.changeless.BrowserData.REMOTE_ALLOW_ORIGINS
 import static com.eliasnogueira.data.changeless.BrowserData.START_MAXIMIZED;
 import static java.lang.Boolean.TRUE;
 
+@Slf4j
 public enum BrowserFactory {
 
     CHROME {
@@ -64,8 +70,15 @@ public enum BrowserFactory {
             chromeOptions.addArguments(DISABLE_NOTIFICATIONS);
             chromeOptions.addArguments(REMOTE_ALLOW_ORIGINS);
 
-            if (configuration().headless()) chromeOptions.addArguments(CHROME_HEADLESS);
+            Map<String, Object> selenoidConfig = new HashMap<>();
+            selenoidConfig.put("enableVNC", TRUE);
+            chromeOptions.setCapability("selenoid:options", selenoidConfig);
 
+            if (configuration().headless()) {
+                chromeOptions.addArguments(CHROME_HEADLESS);
+            }
+
+            log.info("chrome option:", chromeOptions.toJson());
             return chromeOptions;
         }
     }, FIREFOX {
@@ -122,7 +135,8 @@ public enum BrowserFactory {
         }
     };
 
-    /**n
+    /**
+     * n
      * Used to run local tests where the WebDriverManager will take care of the driver
      *
      * @return a new WebDriver instance based on the browser set
