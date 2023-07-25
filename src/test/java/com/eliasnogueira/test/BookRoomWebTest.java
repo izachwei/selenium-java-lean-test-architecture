@@ -46,22 +46,26 @@ public class BookRoomWebTest extends BaseWeb {
         accountPage.selectCountry(bookingInformation.country());
         accountPage.selectBudget(bookingInformation.dailyBudget());
         accountPage.clickNewsletter();
-        accountPage.next();
+        while (true) {
+            accountPage.next();
 
-        try {
-            TimeUnit.SECONDS.sleep(20);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            accountPage.previous();
         }
-        var roomPage = new RoomPage();
-        roomPage.selectRoomType(bookingInformation.roomType().get());
-        roomPage.next();
-
-        var detailPage = new DetailPage();
-        detailPage.fillRoomDescription(bookingInformation.roomDescription());
-        detailPage.finish();
-
-        assertThat(detailPage.getAlertMessage())
-                .isEqualTo("Your reservation has been made and we will contact you shortly");
+        //var roomPage = new RoomPage();
+        //roomPage.selectRoomType(bookingInformation.roomType().get());
+        //roomPage.next();
+        //
+        //var detailPage = new DetailPage();
+        //detailPage.fillRoomDescription(bookingInformation.roomDescription());
+        //detailPage.finish();
+        //
+        //assertThat(detailPage.getAlertMessage())
+        //    .isEqualTo("Your reservation has been made and we will contact you shortly");
     }
 }

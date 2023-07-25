@@ -70,9 +70,11 @@ public enum BrowserFactory {
             chromeOptions.addArguments(DISABLE_NOTIFICATIONS);
             chromeOptions.addArguments(REMOTE_ALLOW_ORIGINS);
 
-            Map<String, Object> selenoidConfig = new HashMap<>();
-            selenoidConfig.put("enableVNC", TRUE);
-            chromeOptions.setCapability("selenoid:options", selenoidConfig);
+            //Map<String, Object> selenoidConfig = new HashMap<>();
+            //selenoidConfig.put("enableVNC", TRUE);
+            //chromeOptions.setCapability("selenoid:options", selenoidConfig);
+            //
+            //chromeOptions.setCapability("enableVNC",TRUE);
 
             if (configuration().headless()) {
                 chromeOptions.addArguments(CHROME_HEADLESS);
