@@ -63,4 +63,8 @@ public class AbstractPageObject {
         }
     }
 
+    public WebDriver getDriver(){
+       return DriverManager.getDriver();
+    }
+
 }

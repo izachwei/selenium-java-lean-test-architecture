@@ -52,11 +52,12 @@ public abstract class BaseWeb {
 
     @BeforeSuite
     public void beforeSuite() {
-        System.setProperty("http.proxyHost", "proxy.buyabs.corp");
-        System.setProperty("http.proxyPort", "9090");
-        System.setProperty("https.proxyHost", "proxy.buyabs.corp");
-        System.setProperty("https.proxyPort", "9090");
+//        System.setProperty("http.proxyHost", "127.0.0.1");
+//        System.setProperty("http.proxyPort", "10809");
+//        System.setProperty("https.proxyHost", "127.0.0.1");
+//        System.setProperty("https.proxyPort", "10809");
         System.setProperty("webdriver.http.factory", "jdk-http-client");
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\86191\\.cache\\selenium\\chromedriver\\win32\\112.0.5615.49\\chromedriver.exe");
         AllureManager.setAllureEnvironmentInformation();
     }
 
@@ -72,7 +73,7 @@ public abstract class BaseWeb {
     private WebDriverWait getWebDriveWait() {
         if (webDriverWait == null) {
             webDriverWait = new WebDriverWait(DriverManager.getDriver()
-                , Duration.of(200, ChronoUnit.SECONDS));
+                    , Duration.of(200, ChronoUnit.SECONDS));
         }
         return webDriverWait;
     }
@@ -87,14 +88,14 @@ public abstract class BaseWeb {
         try {
             getWebDriveWait().until(expectedCondition);
         } catch (TimeoutException var4) {
-            ((JavascriptExecutor)driver).executeScript("window.stop();", new Object[0]);
+            ((JavascriptExecutor) driver).executeScript("window.stop();", new Object[0]);
         }
     }
 
     public void waitPageLoaded() {
         ExpectedCondition<Boolean> expectation = (e) -> {
             assert e != null;
-            Object o = ((JavascriptExecutor)e).executeScript("return document.readyState", new Object[0]);
+            Object o = ((JavascriptExecutor) e).executeScript("return document.readyState", new Object[0]);
             return o == null ? false : "complete".equals(o.toString());
         };
         webDriverWaitUntil(expectation);

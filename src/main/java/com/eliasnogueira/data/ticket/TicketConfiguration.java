@@ -15,6 +15,9 @@ public interface TicketConfiguration extends Config {
     @Key("stationStr")
     String stationStr();
 
+    @Key("seatType")
+    String seatType();
+
     @Key("from")
     String from();
 
@@ -29,4 +32,7 @@ public interface TicketConfiguration extends Config {
 
     @Key("lever")
     String[] lever();
+
+    @Key("passenger")
+    String[] passenger();
 }

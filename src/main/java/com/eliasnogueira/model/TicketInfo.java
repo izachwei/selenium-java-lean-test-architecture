@@ -20,5 +20,6 @@ public class TicketInfo {
 
     private String[] level;
 
+    private String[] passenger;
 
 }
