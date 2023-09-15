@@ -24,10 +24,18 @@
 
 package com.eliasnogueira;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+
 import com.eliasnogueira.driver.DriverManager;
 import com.eliasnogueira.driver.TargetFactory;
 import com.eliasnogueira.report.AllureManager;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
@@ -40,8 +48,14 @@ import static com.eliasnogueira.config.ConfigurationManager.configuration;
 @Listeners({TestListener.class})
 public abstract class BaseWeb {
 
+    private WebDriverWait webDriverWait;
+
     @BeforeSuite
     public void beforeSuite() {
+        System.setProperty("http.proxyHost", "proxy.buyabs.corp");
+        System.setProperty("http.proxyPort", "9090");
+        System.setProperty("https.proxyHost", "proxy.buyabs.corp");
+        System.setProperty("https.proxyPort", "9090");
         System.setProperty("webdriver.http.factory", "jdk-http-client");
         AllureManager.setAllureEnvironmentInformation();
     }
@@ -51,12 +65,42 @@ public abstract class BaseWeb {
     public void preCondition(@Optional("chrome") String browser) {
         WebDriver driver = new TargetFactory().createInstance(browser);
         DriverManager.setDriver(driver);
-
         DriverManager.getDriver().get(configuration().url());
+        waitPageLoaded();
+    }
+
+    private WebDriverWait getWebDriveWait() {
+        if (webDriverWait == null) {
+            webDriverWait = new WebDriverWait(DriverManager.getDriver()
+                , Duration.of(200, ChronoUnit.SECONDS));
+        }
+        return webDriverWait;
     }
 
     @AfterMethod(alwaysRun = true)
     public void postCondition() {
         DriverManager.quit();
+    }
+
+    public <T> void webDriverWaitUntil(ExpectedCondition<T> expectedCondition) {
+        WebDriver driver = DriverManager.getDriver();
+        try {
+            getWebDriveWait().until(expectedCondition);
+        } catch (TimeoutException var4) {
+            ((JavascriptExecutor)driver).executeScript("window.stop();", new Object[0]);
+        }
+    }
+
+    public void waitPageLoaded() {
+        ExpectedCondition<Boolean> expectation = (e) -> {
+            assert e != null;
+            Object o = ((JavascriptExecutor)e).executeScript("return document.readyState", new Object[0]);
+            return o == null ? false : "complete".equals(o.toString());
+        };
+        webDriverWaitUntil(expectation);
+    }
+
+    public WebDriver getDriver() {
+        return DriverManager.getDriver();
     }
 }

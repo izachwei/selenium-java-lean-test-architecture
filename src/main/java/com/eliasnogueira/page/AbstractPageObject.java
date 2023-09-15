@@ -24,15 +24,43 @@
 
 package com.eliasnogueira.page;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import com.eliasnogueira.driver.DriverManager;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static com.eliasnogueira.config.ConfigurationManager.configuration;
 import static org.openqa.selenium.support.PageFactory.initElements;
 
 public class AbstractPageObject {
 
+    protected WebDriverWait webDriverWait;
+
     protected AbstractPageObject() {
         initElements(new AjaxElementLocatorFactory(DriverManager.getDriver(), configuration().timeout()), this);
     }
+
+    private WebDriverWait getWebDriveWait() {
+        if (webDriverWait == null) {
+            webDriverWait = new WebDriverWait(DriverManager.getDriver()
+                , Duration.of(200, ChronoUnit.SECONDS));
+        }
+        return webDriverWait;
+    }
+
+    public <T> void webDriverWaitUntil(ExpectedCondition<T> expectedCondition) {
+        WebDriver driver = DriverManager.getDriver();
+        try {
+            getWebDriveWait().until(expectedCondition);
+        } catch (TimeoutException var4) {
+            ((JavascriptExecutor)driver).executeScript("window.stop();", new Object[0]);
+        }
+    }
+
 }
